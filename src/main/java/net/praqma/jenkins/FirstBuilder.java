@@ -31,6 +31,8 @@ import hudson.model.BuildListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import java.io.IOException;
+import java.util.List;
+import net.praqma.util.execute.CommandLine;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
@@ -58,7 +60,16 @@ public class FirstBuilder extends Builder {
 
     @Override
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
-        listener.getLogger().println("My First Builder");        
+        listener.getLogger().println("My First Builder");
+        
+        String javaVersion = "Unknown";
+        
+        List<String> standardOut = CommandLine.getInstance().run(" java -version" ).stdoutList;
+        if(standardOut.size() > 0) {
+            javaVersion = standardOut.get(0);
+        }
+        
+        listener.getLogger().println( "Found this java version: " + javaVersion);
         return true;
     }
 }

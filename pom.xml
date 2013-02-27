@@ -47,6 +47,15 @@
         </pluginRepository>
     </pluginRepositories>
     
+    <dependencies>
+        <dependency>
+            <groupId>net.praqma</groupId>
+            <artifactId>praqmajutils</artifactId>
+            <version>0.1.28</version>
+        </dependency>
+    </dependencies>
+    
+    
     <licenses> 
         <license> 
             <name>MIT</name> 

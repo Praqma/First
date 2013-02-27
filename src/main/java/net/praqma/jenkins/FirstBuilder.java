@@ -45,6 +45,8 @@ import org.kohsuke.stapler.DataBoundConstructor;
  */
 public class FirstBuilder extends Builder {
     
+    public final boolean runOnSlaves;
+    
     @Extension
     public static class FirstBuilderImpl extends BuildStepDescriptor<Builder> {
 
@@ -60,19 +62,22 @@ public class FirstBuilder extends Builder {
     }
     
     @DataBoundConstructor
-    public FirstBuilder() { }
+    public FirstBuilder(final boolean runOnSlaves) { 
+        this.runOnSlaves = runOnSlaves;
+    }
 
     @Override
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
         listener.getLogger().println("My First Builder");
         
-        String javaVersion = "Unknown";
+        String javaVersion = null;
         
-        List<String> standardOut = CommandLine.getInstance().run(" java -version" ).stdoutList;
-        if(standardOut.size() > 0) {
-            javaVersion = standardOut.get(0);
+        if ( runOnSlaves) {
+            javaVersion = build.getWorkspace().act(new FirstRemoteOperation());
+        } else {
+            javaVersion = new FirstRemoteOperation().invoke(null, null);
         }
-                     
+
         listener.getLogger().println( "Found this java version: " + javaVersion);
         
         FirstBuildAction action = build.getAction(FirstBuildAction.class);

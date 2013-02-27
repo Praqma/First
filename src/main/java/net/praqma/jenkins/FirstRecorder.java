@@ -28,64 +28,62 @@ import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.Action;
+import hudson.model.Build;
 import hudson.model.BuildListener;
-import hudson.model.Project;
+import hudson.model.Result;
 import hudson.tasks.BuildStepDescriptor;
-import hudson.tasks.Builder;
+import hudson.tasks.BuildStepMonitor;
+import hudson.tasks.Publisher;
+import hudson.tasks.Recorder;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import net.praqma.util.execute.CommandLine;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
  *
  * @author Praqma
  */
-public class FirstBuilder extends Builder {
+public class FirstRecorder extends Recorder {
+
+    @DataBoundConstructor
+    public FirstRecorder() {
     
+    }
+
     @Extension
-    public static class FirstBuilderImpl extends BuildStepDescriptor<Builder> {
+    public static final class DescriptorImpl extends BuildStepDescriptor<Publisher> {
 
         @Override
-        public boolean isApplicable(Class<? extends AbstractProject> proj) {
+        public boolean isApplicable(Class<? extends AbstractProject> arg0) {
             return true;
         }
 
         @Override
         public String getDisplayName() {
-            return "First Builder";
-        }        
+            return "First Recorder";
+        }
+        
     }
-    
-    @DataBoundConstructor
-    public FirstBuilder() { }
 
     @Override
-    public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
-        listener.getLogger().println("My First Builder");
-        
-        String javaVersion = "Unknown";
-        
-        List<String> standardOut = CommandLine.getInstance().run(" java -version" ).stdoutList;
-        if(standardOut.size() > 0) {
-            javaVersion = standardOut.get(0);
-        }
-                     
-        listener.getLogger().println( "Found this java version: " + javaVersion);
-        
+    public boolean perform(Build<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
         FirstBuildAction action = build.getAction(FirstBuildAction.class);
-        
-        
         if(action != null) {
-            action.addInfo(javaVersion);
-        } else {
-            action = new FirstBuildAction();
-            action.addInfo(javaVersion);
-            build.addAction(action);        
+            if(!action.hasEvenRandomNumber()) {
+                build.setResult(Result.UNSTABLE);
+            }
         }
         
         return true;
     }
+    
+    @Override
+    public BuildStepMonitor getRequiredMonitorService() {
+        return BuildStepMonitor.NONE;
+    }
+
+    @Override
+    public Action getProjectAction(AbstractProject<?, ?> project) {
+        return new FirstProjectAction(project);
+    }
+    
 }

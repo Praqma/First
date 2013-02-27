@@ -82,4 +82,13 @@ public class FirstBuildAction implements Action {
             return String.format ( "Java version: %s - RandomNumber: %s",javaVersion,randomNumber);
         }        
     }
+    
+    public boolean hasEvenRandomNumber() {
+        for(FirstBuildAction.FirstBuildInfo info : firstBuildInfo) {
+            if(info.randomNumber % 2 == 0) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

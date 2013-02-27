@@ -27,10 +27,14 @@ import hudson.Extension;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
+import hudson.model.Action;
 import hudson.model.BuildListener;
+import hudson.model.Project;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import net.praqma.util.execute.CommandLine;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -68,8 +72,25 @@ public class FirstBuilder extends Builder {
         if(standardOut.size() > 0) {
             javaVersion = standardOut.get(0);
         }
-        
+                     
         listener.getLogger().println( "Found this java version: " + javaVersion);
+        
+        FirstBuildAction action = build.getAction(FirstBuildAction.class);
+        
+        
+        if(action != null) {
+            action.addInfo(javaVersion);
+        } else {
+            action = new FirstBuildAction();
+            action.addInfo(javaVersion);
+            build.addAction(action);        
+        }
+        
         return true;
+    }
+
+    @Override
+    public Action getProjectAction(AbstractProject<?, ?> project) {
+        return new FirstProjectAction(project);
     }
 }

@@ -31,14 +31,31 @@ import java.util.List;
 import net.praqma.util.execute.CommandLine;
 
 /**
+ * Class representing a remote file operation. Whenever Jenkins acts() upon it's workspace 
+ * the method invoke() is called on the machine executing the job (Either the remote or the master).
  *
- * @author Praqma
+ * The class can have a constructor with parameters. These parameters are serialized and available
+ * on the remote.
+ * 
+ * @author praqma
+ * 
  */
 public class FirstRemoteOperation implements FilePath.FileCallable<String>  {
-
+    
+    /**
+     * This class implements {@link FilePath.FileCallable}. The invoke method is executed either on the master or the remote.
+     * The returned value MUST be {@link Serializable} if the task is ever going be executed remotely.
+     * 
+     * @param f the remote workspace (or null if not remote)
+     * @param channel the remote channel (or null if not remote)
+     * @return a String containing information about the installed java version
+     * @throws IOException
+     * @throws InterruptedException 
+     */
     @Override
     public String invoke(File f, VirtualChannel channel) throws IOException, InterruptedException {
-        String javaVersion = "Unknown";        
+        String javaVersion = "Unknown";
+        //Read command line output into a list of strings.
         List<String> standardOut = CommandLine.getInstance().run(" java -version" ).stdoutList;
         if(standardOut.size() > 0) {
             javaVersion = standardOut.get(0);

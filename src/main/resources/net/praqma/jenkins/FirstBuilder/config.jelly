@@ -1,5 +1,6 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
          xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+    <!-- An entry represent a single row with 2 columns, one for the title, and the rest for the input  -->
     <f:entry title="Execute buildstep on slave" field="runOnSlaves">
         <f:checkbox/>
     </f:entry>

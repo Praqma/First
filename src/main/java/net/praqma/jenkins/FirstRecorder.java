@@ -40,23 +40,52 @@ import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
  *
+ * This is a {@link Recorder}, which is a {@link Publisher}.
+ * 
+ * Publisher are {@link hudson.tasks.BuildStep}s performed in the post build phase. They are designed for reporting.
+ * The build phase usually involves building or compiling, and maybe some rudimentary smoke test of your software.
+ * Then in the post build phase you're more likely to perform static analysis of your source code, check for coverage and maybe compiler warnings.
+ * 
+ * Our example demonstrates in a very simple way how the post build step can be used to set the overall result of a given build.
+ * 
+ * Our example recorder requires the user to enter a string, that must be contained as a part build steps in order to be considered stable.
+ * 
  * @author Praqma
  */
 public class FirstRecorder extends Recorder {
 
+    /**
+     * Required constructor. Our Recorder, which extends Publisher, which implements Describable
+     * must have specified a DataBoundConstuctor. The DataBoundConstructor is invoked whenever the job cofiguration 
+     * is saved, and is used to bind form input variables to constructor parameters.
+     * 
+     */
     @DataBoundConstructor
     public FirstRecorder() {
     
     }
 
+      /**
+     * Required class with a concrete implementation of the descriptor.
+     */
     @Extension
     public static final class DescriptorImpl extends BuildStepDescriptor<Publisher> {
 
+         /**
+         * Same as with the {@link FirstBuilder}
+         * @param project The class name of the selected project type.
+         * @return a boolean value indicating whether this BuildStep can be used with the selected Project Type.
+         */
         @Override
-        public boolean isApplicable(Class<? extends AbstractProject> arg0) {
+        public boolean isApplicable(Class<? extends AbstractProject> project) {
             return true;
         }
 
+        /**
+         * Required method. Needs to be overridden.
+         * 
+         * @return the name to be display in the describable list
+         */
         @Override
         public String getDisplayName() {
             return "First Recorder";
@@ -64,6 +93,20 @@ public class FirstRecorder extends Recorder {
         
     }
 
+       /**
+     * Performs the required operations for this build step. The method should generally return true. If some critical error arises such as
+     * not being able to open a required file, it is much better to abort the pipeline by throwing an {@link AbortException}.
+     *
+     * This very simple reference implementation contains code that checks if the action contains items with the text, you specify when configuring
+     * the {@link FirstRecorder} project. 
+     * 
+     * @param build
+     * @param launcher
+     * @param listener
+     * @return a boolean value indicating proper execution, if true, the next item in build step is picked up for execution
+     * @throws InterruptedException
+     * @throws IOException 
+     */
     @Override
     public boolean perform(Build<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
         FirstBuildAction action = build.getAction(FirstBuildAction.class);
@@ -76,11 +119,17 @@ public class FirstRecorder extends Recorder {
         return true;
     }
     
+    //Just copy paste this. No reason to worry about this, do it this way and it will work with modern Jenkin installation
     @Override
     public BuildStepMonitor getRequiredMonitorService() {
         return BuildStepMonitor.NONE;
     }
 
+    /**
+     * This method returns a project action you wish to have displayed on the front page
+     * @param project
+     * @return the project action to be displayed
+     */
     @Override
     public Action getProjectAction(AbstractProject<?, ?> project) {
         return new FirstProjectAction(project);

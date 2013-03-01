@@ -1,5 +1,6 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
          xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt" xmlns:local="local">    
     <h2>Most recent build action</h2>
+    <!-- In floatingBox, the project action is referenced by the jelly ${from} -->
     ${from.getLastBuildAction()}
 </j:jelly>   

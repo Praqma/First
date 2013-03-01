@@ -30,6 +30,14 @@ import java.util.Random;
 
 /**
  *
+ * A class representing an action performed in a build step(It can be used in all parts of the build).
+ * These actions are added to the build. These actions can contain business logic, data etc.
+ * Builds can have multiple actions of the same type.
+ * 
+ * This data can the be extracted for use in the various views that Jenkins offers.
+ * 
+ * In our example we will re-use the same action through the entire build pipeline.
+ * 
  * @author Praqma
  */
 public class FirstBuildAction implements Action {
@@ -44,6 +52,11 @@ public class FirstBuildAction implements Action {
         firstBuildInfo.add(new FirstBuildInfo(javaVersion));
     }    
     
+    
+     /**
+     * 
+     * @return the path to the icon file to be used by jenkins. If null, no link will be generated
+     */
     @Override
     public String getIconFileName() {
         return "/plugin/first-plugin/images/64x64/one-icon.png";
@@ -68,6 +81,9 @@ public class FirstBuildAction implements Action {
         return builder.toString();
     }
     
+    /**
+    * Small data class used to store data we collect from our slaves.
+    */
     public static class FirstBuildInfo {
         public String javaVersion;
         public int randomNumber;

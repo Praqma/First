@@ -51,6 +51,7 @@
         <connection>scm:git:ssh://github.com/Praqma/First.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/Praqma/First.git</developerConnection>
         <url>https://github.com/Praqma/First</url>
+        <tag>HEAD</tag>
     </scm>
 
     <dependencies>
